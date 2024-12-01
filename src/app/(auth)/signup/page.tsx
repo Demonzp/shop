@@ -1,4 +1,20 @@
+import { formDataToJson } from "@/app/lib/global";
+import Link from "next/link";
+
 const Signup = () => {
+
+    const onSubmit = async (formData: FormData) => {
+        "use server";
+        //const data = formData.
+        const res = await fetch('http://localhost:3000/users', {
+            method: 'POST',
+            body: formDataToJson(formData)
+        });
+
+        const newUser = await res.json();
+        console.log('newUser = ', newUser);
+    };
+
     return (
         <>
             <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -16,7 +32,7 @@ const Signup = () => {
                 </div>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                    <form action="#" method="POST" className="space-y-6">
+                    <form action={onSubmit} className="space-y-6">
                         <div>
                             <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
                                 *Електронная почта
@@ -48,6 +64,50 @@ const Signup = () => {
                         </div>
 
                         <div>
+                            <label htmlFor="second-name" className="block text-sm/6 font-medium text-gray-900">
+                                Отчество
+                            </label>
+                            <div className="mt-2">
+                                <input
+                                    id="second-name"
+                                    name="second-name"
+                                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="last-name" className="block text-sm/6 font-medium text-gray-900">
+                                *Фамилия
+                            </label>
+                            <div className="mt-2">
+                                <input
+                                    id="last-name"
+                                    name="last-name"
+                                    required
+                                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="phone" className="block text-sm/6 font-medium text-gray-900">
+                                *Телефон
+                            </label>
+                            <div className="mt-2">
+                                <div className="flex items-center">
+                                    <label className="pr-4">+380</label>
+                                    <input
+                                        id="phone"
+                                        name="phone"
+                                        required
+                                        className="block rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
                             <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
                                 *Пароль
                             </label>
@@ -73,27 +133,37 @@ const Signup = () => {
                                     name="repeat-password"
                                     type="password"
                                     required
-                                    autoComplete="current-password"
+                                    autoComplete="repeat-password"
                                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                 />
                             </div>
                         </div>
 
                         <div>
+                            <label className="block text-sm/6 font-medium text-gray-900">
+                                Поля отмеченые " * " обязательны для заполнения
+                            </label>
+                        </div>
+
+                        <div>
                             <button
                                 type="submit"
+                                //onClick={onSubmit}
                                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
-                                Sign in
+                                Зарегистрироваться
                             </button>
                         </div>
                     </form>
 
                     <p className="mt-10 text-center text-sm/6 text-gray-500">
-                        Not a member?{' '}
-                        <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                            Start a 14 day free trial
-                        </a>
+                        Уже есть аккаунт?{' '}
+                        <Link
+                            href="/signin"
+                            className="font-semibold text-indigo-600 hover:text-indigo-500"
+                        >
+                            Войти
+                        </Link>
                     </p>
                 </div>
             </div>

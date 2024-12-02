@@ -1,6 +1,21 @@
+"use client";
+
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Signin = () => {
+    const searchParams = useSearchParams();
+    const [valEmail, setValEmail] = useState('');
+
+    useEffect(()=>{
+        const email = searchParams.get('email');
+        if(email){
+            console.log('email = ', email);
+            setValEmail(email);
+        }
+        
+    }, []);
     return (
         <>
             <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -28,6 +43,8 @@ const Signin = () => {
                                     id="email"
                                     name="email"
                                     type="email"
+                                    value={valEmail}
+                                    onChange={(e)=>setValEmail(e.target.value)}
                                     required
                                     autoComplete="email"
                                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"

@@ -1,19 +1,30 @@
+"use client";
 import { formDataToJson } from "@/app/lib/global";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const Signup = () => {
+    const router = useRouter();
+    const [isSubmit, setIsSubmit] = useState(false);
 
     const onSubmit = async (formData: FormData) => {
-        "use server";
+        //"use server";
         //const data = formData.
-        const res = await fetch('http://localhost:3000/users', {
+        const res = await fetch('/users', {
             method: 'POST',
             body: formDataToJson(formData)
         });
 
         const newUser = await res.json();
+        router.push('/signin');
         console.log('newUser = ', newUser);
     };
+
+    const preSubmit = (formData: FormData)=>{
+        setIsSubmit(true);
+        onSubmit(formData);
+    }
 
     return (
         <>
@@ -32,7 +43,7 @@ const Signup = () => {
                 </div>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                    <form action={onSubmit} className="space-y-6">
+                    <form action={preSubmit} className="space-y-6">
                         <div>
                             <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
                                 *Електронная почта
@@ -146,13 +157,19 @@ const Signup = () => {
                         </div>
 
                         <div>
-                            <button
-                                type="submit"
-                                //onClick={onSubmit}
-                                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                            >
-                                Зарегистрироваться
-                            </button>
+                            {
+                                !isSubmit?
+                                    <button
+                                        type="submit"
+                                        //onClick={onSubmit}
+                                        className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    >
+                                        Зарегистрироваться
+                                    </button>
+                                :
+                                    null
+                            }
+                            
                         </div>
                     </form>
 

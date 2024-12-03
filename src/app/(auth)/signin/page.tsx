@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 const Signin = () => {
     const searchParams = useSearchParams();
     const [valEmail, setValEmail] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(()=>{
         const email = searchParams.get('email');
@@ -16,6 +17,18 @@ const Signin = () => {
         }
         
     }, []);
+const onSubmit(formData:FormData){
+ try{
+const res=fetch('',{});
+}
+catch(err){
+
+}
+}
+const preSubmit(formData:FormData){
+setIsLoading(true);
+onSubmit(formData);
+}
     return (
         <>
             <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -33,7 +46,7 @@ const Signin = () => {
                 </div>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                    <form action="#" method="POST" className="space-y-6">
+                    <form action={preSubmit} className="space-y-6">
                         <div>
                             <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
                                 Електронная почта
@@ -76,12 +89,16 @@ const Signin = () => {
                         </div>
 
                         <div>
+{
+ !isLoading?
                             <button
                                 type="submit"
                                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
                                 Войти
                             </button>
+:
+null
                         </div>
                     </form>
 

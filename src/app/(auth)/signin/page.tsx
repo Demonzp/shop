@@ -1,5 +1,6 @@
 "use client";
 
+import { formDataToJson } from "@/app/lib/global";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -9,26 +10,32 @@ const Signin = () => {
     const [valEmail, setValEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(()=>{
+    useEffect(() => {
         const email = searchParams.get('email');
-        if(email){
+        if (email) {
             console.log('email = ', email);
             setValEmail(email);
         }
-        
-    }, []);
-const onSubmit(formData:FormData){
- try{
-const res=fetch('',{});
-}
-catch(err){
 
-}
-}
-const preSubmit(formData:FormData){
-setIsLoading(true);
-onSubmit(formData);
-}
+    }, []);
+    const onSubmit = async (formData: FormData) => {
+        try {
+            const res = await fetch('/users/auth/email', {
+                method: 'POST',
+                body: formDataToJson(formData)
+            });
+
+            const user = await res.json();
+            console.log('user = ', user);
+        }
+        catch (err) {
+            console.log('err = ', (err as Error).message);
+        }
+    }
+    const preSubmit = (formData: FormData) => {
+        setIsLoading(true);
+        onSubmit(formData);
+    }
     return (
         <>
             <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -37,8 +44,8 @@ onSubmit(formData);
                         alt="Your Company"
                         src="next.svg"
                         className="mx-auto h-10 w-auto"
-                        // width={64}
-                        // height={64}
+                    // width={64}
+                    // height={64}
                     />
                     <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
                         Войти в свой аккаунт
@@ -57,7 +64,7 @@ onSubmit(formData);
                                     name="email"
                                     type="email"
                                     value={valEmail}
-                                    onChange={(e)=>setValEmail(e.target.value)}
+                                    onChange={(e) => setValEmail(e.target.value)}
                                     required
                                     autoComplete="email"
                                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -89,23 +96,24 @@ onSubmit(formData);
                         </div>
 
                         <div>
-{
- !isLoading?
-                            <button
-                                type="submit"
-                                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                            >
-                                Войти
-                            </button>
-:
-null
+                            {
+                                !isLoading ?
+                                    <button
+                                        type="submit"
+                                        className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    >
+                                        Войти
+                                    </button>
+                                    :
+                                    null
+                            }
                         </div>
                     </form>
 
                     <p className="mt-10 text-center text-sm/6 text-gray-500">
                         Не зарегистрированы?{' '}
-                        <Link 
-                            href="/signup" 
+                        <Link
+                            href="/signup"
                             className="font-semibold text-indigo-600 hover:text-indigo-500"
                         >
                             Зарегистрироваться

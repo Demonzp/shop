@@ -13,7 +13,7 @@ model User {
     firstName String @db.VarChar(80)
     secondName String? @db.VarChar(80)
     lastName String @db.VarChar(120)
-    phone Int?
+    phone String?
     email    String    @unique
     password String @db.VarChar(256)
     role     UserRole  @default(USER)

@@ -1,5 +1,7 @@
 "use client";
-import { formDataToJson } from "@/app/lib/global";
+
+import { formDataToObj } from "@/app/lib/global";
+import { formRegisterZod } from "@/constants/authZod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -9,11 +11,9 @@ const Signup = () => {
     const [isSubmit, setIsSubmit] = useState(false);
 
     const onSubmit = async (formData: FormData) => {
-        //"use server";
-        //const data = formData.
         const res = await fetch('/users', {
             method: 'POST',
-            body: formDataToJson(formData)
+            //body: formDataToJson(formData)
         });
 
         const newUser = await res.json();
@@ -23,7 +23,12 @@ const Signup = () => {
 
     const preSubmit = (formData: FormData)=>{
         setIsSubmit(true);
-        onSubmit(formData);
+        const data = formDataToObj(formData);
+        const validate = formRegisterZod.safeParse(data);
+        if (!validate.success) {
+            console.log('validate.error = ', validate.error.issues);
+        }
+        //onSubmit(formData);
     }
 
     return (

@@ -1,4 +1,4 @@
-const formDataToJson = (formData:FormData)=>{
+const formDataToObj = (formData:FormData)=>{
     const object:{[key: string]: any;} = {};
     formData.forEach((value, key) => {
         // Reflect.has in favor of: object.hasOwnProperty(key)
@@ -12,9 +12,24 @@ const formDataToJson = (formData:FormData)=>{
         object[key].push(value);
     });
     
-    return JSON.stringify(object); 
+    return object; 
 };
 
+const objToJson = (obj:TObjAny)=>{
+    return JSON.stringify(obj); 
+};
+
+type TObjAny = {[key:string]:any};
+const objKeyFromKebabCaseToCamelCase = (obj:TObjAny):TObjAny=>{
+    const newObj:TObjAny = {};
+    for (const key in obj) {
+        newObj[key.replace(/-./g, x=>x[1].toUpperCase())] = obj[key];
+    }
+    return newObj;
+}
+
 export {
-    formDataToJson
+    formDataToObj,
+    objToJson,
+    objKeyFromKebabCaseToCamelCase
 }

@@ -86,14 +86,21 @@ export const Header = () => {
                     <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                         <Link
                             href={"/signin"}
-                            className={"pr-4 text-sm font-medium text-gray-700 hover:text-gray-800"}
+                            className={classNames(
+                                pathName === "/signin" ? 'bg-gray-500 text-white' : 'text-black hover:bg-gray-400 hover:text-white',
+                                'rounded-md px-1 py-2 mr-4 text-sm font-medium',
+                            )}
+                            //className={"pr-4 text-sm font-medium text-gray-700 hover:text-gray-800"}
                         >
                             Войти
                         </Link>
                         <span aria-hidden="true" className="h-6 w-px bg-gray-200" />
                         <Link
                             href={"/signup"}
-                            className={"pl-4 text-sm font-medium text-gray-700 hover:text-gray-800"}
+                            className={classNames(
+                                pathName === "/signup" ? 'bg-gray-500 text-white' : 'text-black hover:bg-gray-400 hover:text-white',
+                                'rounded-md px-1 py-2 ml-4 text-sm font-medium',
+                            )}
                         >
                             Регистрация
                         </Link>

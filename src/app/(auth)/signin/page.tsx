@@ -1,6 +1,6 @@
 "use client";
 
-import { formDataToJson } from "@/app/lib/global";
+import {  } from "@/app/lib/global";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -22,7 +22,7 @@ const Signin = () => {
         try {
             const res = await fetch('/users/auth/email', {
                 method: 'POST',
-                body: formDataToJson(formData)
+                //body: formDataToJson(formData)
             });
 
             const user = await res.json();

@@ -1,33 +1,87 @@
 "use client";
 
-import { formDataToObj } from "@/app/lib/global";
+import { formDataToObj, objKeyFromKebabCaseToCamelCase, objToJson } from "@/app/lib/global";
 import { formRegisterZod } from "@/constants/authZod";
+import { TObjAny } from "@/types/global";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { ZodIssue } from "zod";
+
+const getZodIssue = (data: ZodIssue[], key: string):string[]=>{
+    const msgs = [];
+    for (let i = 0; i < data.length; i++) {
+        const el = data[i];
+        if(key===el.path[0]){
+            msgs.push(el.message);
+            //return el.message;
+        }
+    }
+    return msgs;
+}
 
 const Signup = () => {
     const router = useRouter();
     const [isSubmit, setIsSubmit] = useState(false);
+    const [errValid, setErrValid] = useState<ZodIssue[]>([]);
+    const refForm = useRef<HTMLFormElement>(null);
 
-    const onSubmit = async (formData: FormData) => {
-        const res = await fetch('/users', {
-            method: 'POST',
-            //body: formDataToJson(formData)
-        });
-
-        const newUser = await res.json();
-        router.push('/signin');
-        console.log('newUser = ', newUser);
+    const onSubmit = async (data: TObjAny) => {
+        try{
+            const res = await fetch('/users', {
+                method: 'POST',
+                body: objToJson(data)
+            });
+    
+            //await res.json();
+            if(!res.ok){
+                //console.error(res.body);
+                const dataError = await res.json();
+                setErrValid(dataError);
+                //console.error(dataError);
+                return;
+            }
+            router.push('/signin');
+        }catch(err){
+            console.log('error = ', (err as Error).message);
+        }
+        
+        //console.log('newUser = ', newUser);
     };
 
-    const preSubmit = (formData: FormData)=>{
-        setIsSubmit(true);
-        const data = formDataToObj(formData);
-        const validate = formRegisterZod.safeParse(data);
-        if (!validate.success) {
-            console.log('validate.error = ', validate.error.issues);
+    const preSubmit = ()=>{
+        setErrValid([]);
+        const form = refForm.current;
+        if(form){
+            const elements = form.elements;
+            const data:TObjAny = {};
+            for (let i = 0; i < elements.length; i++) {
+                const el = elements[i];
+                if(el.nodeName==='INPUT'){
+                    const elInput = el as HTMLInputElement;
+                    data[elInput.name] = elInput.value;
+                    //console.log((el as HTMLInputElement).name,'||',(el as HTMLInputElement).value);
+                }
+            }
+
+            const normalData = objKeyFromKebabCaseToCamelCase(data);
+            console.log('normalData = ', normalData);
+            const validate = formRegisterZod.safeParse(normalData);
+            //if(!validate.success){
+            //    console.log('validate.error = ', validate.error.issues);
+            //    setErrValid(validate.error.issues);
+            //}else{
+                onSubmit(normalData);
+            //}
         }
+        //setIsSubmit(true);
+        // const data = objKeyFromKebabCaseToCamelCase(formDataToObj(formData));
+        // console.log('data = ', data);
+        // const validate = formRegisterZod.safeParse(data);
+        // if (!validate.success) {
+        //     console.log('validate.error = ', validate.error.issues);
+        //     setErrValid(validate.error.issues);
+        // }
         //onSubmit(formData);
     }
 
@@ -48,12 +102,23 @@ const Signup = () => {
                 </div>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                    <form action={preSubmit} className="space-y-6">
+                    <form 
+                        ref={refForm}
+                        className="space-y-6"
+                    >
                         <div>
                             <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
                                 *Електронная почта
                             </label>
                             <div className="mt-2">
+                                <div>
+                                    {
+                                        getZodIssue(errValid, 'email').map((msg,i)=>{
+                                            return <label key={i} className="errorLabel">{msg}</label> 
+                                        })
+                                    }
+                                </div>
+                                
                                 <input
                                     id="email"
                                     name="email"
@@ -70,6 +135,11 @@ const Signup = () => {
                                 *Имя
                             </label>
                             <div className="mt-2">
+                                {
+                                    getZodIssue(errValid, 'firstName').map((msg,i)=>{
+                                        return <label key={i} className="errorLabel">{msg}</label> 
+                                    })
+                                }
                                 <input
                                     id="first-name"
                                     name="first-name"
@@ -84,6 +154,7 @@ const Signup = () => {
                                 Отчество
                             </label>
                             <div className="mt-2">
+                                
                                 <input
                                     id="second-name"
                                     name="second-name"
@@ -97,6 +168,11 @@ const Signup = () => {
                                 *Фамилия
                             </label>
                             <div className="mt-2">
+                                {
+                                    getZodIssue(errValid, 'lastName').map((msg,i)=>{
+                                        return <label key={i} className="errorLabel">{msg}</label> 
+                                    })
+                                }
                                 <input
                                     id="last-name"
                                     name="last-name"
@@ -111,6 +187,11 @@ const Signup = () => {
                                 *Телефон
                             </label>
                             <div className="mt-2">
+                                {
+                                    getZodIssue(errValid, 'phone').map((msg,i)=>{
+                                        return <label key={i} className="errorLabel">{msg}</label> 
+                                    })
+                                }
                                 <div className="flex items-center">
                                     <label className="pr-4">+380</label>
                                     <input
@@ -128,6 +209,17 @@ const Signup = () => {
                                 *Пароль
                             </label>
                             <div className="mt-2">
+                                <div className="columns-1">
+                                    {
+                                        getZodIssue(errValid, 'password').map((msg,i)=>{
+                                            return (
+                                                <div key={i}>
+                                                    <label className="errorLabel">{msg}</label>
+                                                </div>
+                                            ); 
+                                        })
+                                    }
+                                </div>
                                 <input
                                     id="password"
                                     name="password"
@@ -144,6 +236,11 @@ const Signup = () => {
                                 *Повторите пароль
                             </label>
                             <div className="mt-2">
+                                {
+                                    getZodIssue(errValid, 'repeatPassword').map((msg,i)=>{
+                                        return <label key={i} className="errorLabel">{msg}</label> 
+                                    })
+                                }
                                 <input
                                     id="repeat-password"
                                     name="repeat-password"
@@ -165,8 +262,10 @@ const Signup = () => {
                             {
                                 !isSubmit?
                                     <button
-                                        type="submit"
-                                        //onClick={onSubmit}
+                                        type="button"
+                                        //formAction={(e)=>{}}
+                                        //onClick={(e)=>{}}
+                                        onClick={preSubmit}
                                         className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                     >
                                         Зарегистрироваться

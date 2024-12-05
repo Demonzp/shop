@@ -7,7 +7,7 @@ const passwordValidation = new RegExp(
 export const formRegisterZod = z.object({
     email: z.string().email({ message: 'Введите корректную почту' }),
     firstName: z.string().min(2, { message: 'Имя должно содержать не менее 2-х символов' }),
-    secondName: z.string().min(2, { message: 'Имя должно содержать не менее 2-х символов' }).optional(),
+    secondName: z.string().optional(),
     lastName: z.string().min(2, { message: 'Имя должно содержать не менее 2-х символов' }),
     phone: z.string().min(9, { message: 'Введите корректный номер телефона' }),
     password: z

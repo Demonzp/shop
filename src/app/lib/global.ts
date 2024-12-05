@@ -1,3 +1,5 @@
+import { TObjAny } from "@/types/global";
+
 const formDataToObj = (formData:FormData)=>{
     const object:{[key: string]: any;} = {};
     formData.forEach((value, key) => {
@@ -19,7 +21,6 @@ const objToJson = (obj:TObjAny)=>{
     return JSON.stringify(obj); 
 };
 
-type TObjAny = {[key:string]:any};
 const objKeyFromKebabCaseToCamelCase = (obj:TObjAny):TObjAny=>{
     const newObj:TObjAny = {};
     for (const key in obj) {

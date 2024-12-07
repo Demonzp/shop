@@ -1,8 +1,9 @@
 "use client";
 
+import ErrorComp from "@/app/components/errorComp";
 import { formDataToObj, objKeyFromKebabCaseToCamelCase, objToJson } from "@/app/lib/global";
 import { formRegisterZod } from "@/constants/authZod";
-import { TObjAny } from "@/types/global";
+import { IResponseBody, TObjAny, TServError } from "@/types/global";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -24,6 +25,7 @@ const Signup = () => {
     const router = useRouter();
     const [isSubmit, setIsSubmit] = useState(false);
     const [errValid, setErrValid] = useState<ZodIssue[]>([]);
+    const [err, setErr] = useState('');
     const refForm = useRef<HTMLFormElement>(null);
 
     const onSubmit = async (data: TObjAny) => {
@@ -36,14 +38,19 @@ const Signup = () => {
             //await res.json();
             if(!res.ok){
                 //console.error(res.body);
-                const dataError = await res.json();
-                setErrValid(dataError);
+                const dataError = await res.json() as IResponseBody;
+                if(dataError.typeErr==='validation'){
+                    setErrValid(dataError.data);
+                }else{
+                    setErr(dataError.data);
+                }
                 //console.error(dataError);
                 return;
             }
             router.push('/signin');
         }catch(err){
-            console.log('error = ', (err as Error).message);
+            console.error('error = ', (err as Error).message);
+            setErr((err as Error).message);
         }
         
         //console.log('newUser = ', newUser);
@@ -51,6 +58,7 @@ const Signup = () => {
 
     const preSubmit = ()=>{
         setErrValid([]);
+        setErr('');
         const form = refForm.current;
         if(form){
             const elements = form.elements;
@@ -67,27 +75,21 @@ const Signup = () => {
             const normalData = objKeyFromKebabCaseToCamelCase(data);
             console.log('normalData = ', normalData);
             const validate = formRegisterZod.safeParse(normalData);
-            //if(!validate.success){
-            //    console.log('validate.error = ', validate.error.issues);
-            //    setErrValid(validate.error.issues);
-            //}else{
+            if(!validate.success){
+                console.log('validate.error = ', validate.error.issues);
+                setErrValid(validate.error.issues);
+            }else{
                 onSubmit(normalData);
-            //}
+            }
         }
-        //setIsSubmit(true);
-        // const data = objKeyFromKebabCaseToCamelCase(formDataToObj(formData));
-        // console.log('data = ', data);
-        // const validate = formRegisterZod.safeParse(data);
-        // if (!validate.success) {
-        //     console.log('validate.error = ', validate.error.issues);
-        //     setErrValid(validate.error.issues);
-        // }
-        //onSubmit(formData);
     }
 
     return (
         <>
             <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+                <div className="mt-5 mb-10 sm:mx-auto sm:w-full sm:max-w-sm">
+                    <ErrorComp msg={err}/>
+                </div>
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                     <img
                         alt="Your Company"

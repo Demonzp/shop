@@ -2,7 +2,7 @@
 
 import ErrorComp from "@/app/components/errorComp";
 import { objKeyFromKebabCaseToCamelCase, objToJson } from "@/app/lib/global";
-import { formRegisterZod } from "@/constants/authZod";
+import { formLoginZod } from "@/constants/authZod";
 import { IResponseBody, TObjAny } from "@/types/global";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -21,14 +21,7 @@ const getZodIssue = (data: ZodIssue[], key: string): string[] => {
     return msgs;
 }
 
-function getCookie(name:string) {
-    let matches = document.cookie.match(new RegExp(
-        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-    ));
-    return matches ? decodeURIComponent(matches[1]) : undefined;
-}
-
-const Signup = () => {
+const Signin = () => {
     const router = useRouter();
     const [isSubmit, setIsSubmit] = useState(false);
     //const [tempData, setTempData] = useState<TObjAny>({});
@@ -36,11 +29,9 @@ const Signup = () => {
     const [err, setErr] = useState('');
     const refForm = useRef<HTMLFormElement>(null);
 
-    console.log(getCookie('session'));
-
     const onSubmit = async (data: TObjAny, data2: TObjAny) => {
         try {
-            const res = await fetch('/users', {
+            const res = await fetch('/users/auth/email', {
                 method: 'POST',
                 body: objToJson(data)
             });
@@ -69,10 +60,13 @@ const Signup = () => {
                 setIsSubmit(false);
                 return;
             }
-            router.push('/signin');
+            const user = await res.json();
+            console.log('user = ', user);
+            //router.push('/');
         } catch (err) {
             console.error('error = ', (err as Error).message);
             setErr((err as Error).message);
+            setIsSubmit(false);
         }
 
         //console.log('newUser = ', newUser);
@@ -81,7 +75,7 @@ const Signup = () => {
     const preSubmit = () => {
         setErrValid([]);
         setErr('');
-
+        
         const form = refForm.current;
         if (form) {
             const elements = form.elements;
@@ -97,7 +91,7 @@ const Signup = () => {
             //setTempData(data);
             const normalData = objKeyFromKebabCaseToCamelCase(data);
             console.log('normalData = ', normalData);
-            const validate = formRegisterZod.safeParse(normalData);
+            const validate = formLoginZod.safeParse(normalData);
             if (!validate.success) {
                 console.log('validate.error = ', validate.error.issues);
                 setErrValid(validate.error.issues);
@@ -123,7 +117,7 @@ const Signup = () => {
                     // height={64}
                     />
                     <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-                        Зарегистрировать новый аккаунт
+                        Войти в свой аккаунт
                     </h2>
                 </div>
 
@@ -157,81 +151,6 @@ const Signup = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="first-name" className="block text-sm/6 font-medium text-gray-900">
-                                *Имя
-                            </label>
-                            <div className="mt-2">
-                                {
-                                    getZodIssue(errValid, 'firstName').map((msg, i) => {
-                                        return <label key={i} className="errorLabel">{msg}</label>
-                                    })
-                                }
-                                <input
-                                    id="first-name"
-                                    name="first-name"
-                                    required
-                                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label htmlFor="second-name" className="block text-sm/6 font-medium text-gray-900">
-                                Отчество
-                            </label>
-                            <div className="mt-2">
-
-                                <input
-                                    id="second-name"
-                                    name="second-name"
-                                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label htmlFor="last-name" className="block text-sm/6 font-medium text-gray-900">
-                                *Фамилия
-                            </label>
-                            <div className="mt-2">
-                                {
-                                    getZodIssue(errValid, 'lastName').map((msg, i) => {
-                                        return <label key={i} className="errorLabel">{msg}</label>
-                                    })
-                                }
-                                <input
-                                    id="last-name"
-                                    name="last-name"
-                                    required
-                                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label htmlFor="phone" className="block text-sm/6 font-medium text-gray-900">
-                                Телефон
-                            </label>
-                            <div className="mt-2">
-                                {
-                                    getZodIssue(errValid, 'phone').map((msg, i) => {
-                                        return <label key={i} className="errorLabel">{msg}</label>
-                                    })
-                                }
-                                <div className="flex items-center">
-                                    <label className="pr-4">+380</label>
-                                    <input
-                                        id="phone"
-                                        name="phone"
-                                        inputMode="numeric"
-                                        pattern="\d*"
-                                        className="block rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
                             <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
                                 *Пароль
                             </label>
@@ -259,27 +178,6 @@ const Signup = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="repeat-password" className="block text-sm/6 font-medium text-gray-900">
-                                *Повторите пароль
-                            </label>
-                            <div className="mt-2">
-                                {
-                                    getZodIssue(errValid, 'repeatPassword').map((msg, i) => {
-                                        return <label key={i} className="errorLabel">{msg}</label>
-                                    })
-                                }
-                                <input
-                                    id="repeat-password"
-                                    name="repeat-password"
-                                    type="password"
-                                    required
-                                    autoComplete="repeat-password"
-                                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
                             <label className="block text-sm/6 font-medium text-gray-900">
                                 Поля отмеченые " * " обязательны для заполнения
                             </label>
@@ -295,7 +193,7 @@ const Signup = () => {
                                         onClick={preSubmit}
                                         className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                     >
-                                        Зарегистрироваться
+                                        Войти
                                     </button>
                                     :
                                     null
@@ -305,12 +203,12 @@ const Signup = () => {
                     </form>
 
                     <p className="mt-10 text-center text-sm/6 text-gray-500">
-                        Уже есть аккаунт?{' '}
+                        Еще не зарегистрированы?{' '}
                         <Link
-                            href="/signin"
+                            href="/signup"
                             className="font-semibold text-indigo-600 hover:text-indigo-500"
                         >
-                            Войти
+                            Зарелистрироваться
                         </Link>
                     </p>
                 </div>
@@ -319,4 +217,4 @@ const Signup = () => {
     );
 }
 
-export default Signup;
+export default Signin;

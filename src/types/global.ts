@@ -1,6 +1,6 @@
 export type TObjAny = {[key:string]:any};
 
-export type TServError = 'validation' | 'server';
+export type TServError = 'validation' | 'server' | 'not unique User';
 
 export type TSerResponse = {
     data: any,

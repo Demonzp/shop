@@ -21,13 +21,6 @@ const getZodIssue = (data: ZodIssue[], key: string): string[] => {
     return msgs;
 }
 
-function getCookie(name:string) {
-    let matches = document.cookie.match(new RegExp(
-        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-    ));
-    return matches ? decodeURIComponent(matches[1]) : undefined;
-}
-
 const Signup = () => {
     const router = useRouter();
     const [isSubmit, setIsSubmit] = useState(false);
@@ -36,7 +29,7 @@ const Signup = () => {
     const [err, setErr] = useState('');
     const refForm = useRef<HTMLFormElement>(null);
 
-    console.log(getCookie('session'));
+    //console.log(getCookie('session'));
 
     const onSubmit = async (data: TObjAny, data2: TObjAny) => {
         try {

@@ -14,7 +14,7 @@ model User {
     firstName  String    @db.VarChar(80)
     secondName String?   @db.VarChar(80)
     lastName   String    @db.VarChar(80)
-    phone      String?   @unique @db.VarChar(16)
+    phone      String?   @db.VarChar(16)
     email      String    @unique
     password   String    @db.VarChar(256)
     role       UserRole  @default(USER)

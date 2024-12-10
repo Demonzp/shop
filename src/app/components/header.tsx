@@ -4,6 +4,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIt
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import UserUi from './userUi/userUi';
 
 const navigation = [
     { name: 'Новости', href: '/news', current: false },
@@ -84,7 +85,8 @@ export const Header = () => {
                         </div>
                     </div>
                     <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                        <Link
+                        <UserUi />
+                        {/* <Link
                             href={"/signin"}
                             className={classNames(
                                 pathName === "/signin" ? 'bg-gray-500 text-white' : 'text-black hover:bg-gray-400 hover:text-white',
@@ -103,7 +105,7 @@ export const Header = () => {
                             )}
                         >
                             Регистрация
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
             </div>

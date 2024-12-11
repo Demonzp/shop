@@ -10,3 +10,7 @@ export const userDataToOwner = (user: User)=>{
         verified: user.verified,
     }
 }
+
+export const updateToken = {
+    
+};

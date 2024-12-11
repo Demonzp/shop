@@ -53,7 +53,7 @@ export async function POST(request: Request) {
             name: userRes.firsName
         };
         const time = Math.floor(Date.now() / 1000) + 60*60*24*10;
-        const token = jwt.sign({data: sessionData}, String(user.id)+process.env.TOKEN_SALT, { expiresIn: 60 * 2 });
+        const token = jwt.sign({data: sessionData}, process.env.TOKEN_SALT as string, { expiresIn: 60 * 2 });
         
         const { os, device, browser } = userAgent(request);
         const agent = String(device.vendor)+' '
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
             agent,
             token,
             expiration: time
-        }
+        };
         
         //console.log(agent);
         await prisma.session.create({data:sessionDB});

@@ -62,7 +62,7 @@ const Signin = () => {
             }
             const user = await res.json();
             console.log('user = ', user);
-            //router.push('/');
+            router.push('/');
         } catch (err) {
             console.error('error = ', (err as Error).message);
             setErr((err as Error).message);

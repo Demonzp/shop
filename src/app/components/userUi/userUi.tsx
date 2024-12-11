@@ -20,7 +20,8 @@ const UserUi = () => {
     const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
         //console.log();
-        if (getCookie('isAuth')) {
+        const cookie = getCookie('isAuth');
+        if (cookie&&cookie==='true') {
             setIsAuth(true);
         }
         setIsLoading(false);

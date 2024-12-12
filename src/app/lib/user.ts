@@ -1,7 +1,7 @@
-import { User } from "@prisma/client";
+import { User } from '@prisma/client';
 
-export const userDataToOwner = (user: User)=>{
-    return{
+export const userDataToOwner = (user: User) => {
+    return {
         uid: user.uid,
         email: user.email,
         firsName: user.firstName,
@@ -11,6 +11,4 @@ export const userDataToOwner = (user: User)=>{
     }
 }
 
-export const updateToken = {
-    
-};
+export const secretForJoes = ()=> new TextEncoder().encode(process.env.TOKEN_SALT as string);

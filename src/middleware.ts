@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 //import { decrypt } from '@/app/lib/session'
 import { cookies } from 'next/headers';
-import jwt from 'jsonwebtoken';
+import * as jose from 'jose';
+import { secretForJoes } from './app/lib/user';
  
 // 1. Specify protected and public routes
 const protectedRoutes = ['/dashboard'];
@@ -30,18 +31,13 @@ export default async function middleware(req: NextRequest) {
   if((path==='/signin'||path==='/signup')&&cookie){
     return NextResponse.redirect(new URL('/', req.nextUrl));
   }
-  // 5. Redirect to /dashboard if the user is authenticated
-  // if (
-  //   isPublicRoute &&
-  //   cookie &&
-  //   !req.nextUrl.pathname.startsWith('/dashboard')
-  // ) {
-  //   return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
-  // }
+
   if(cookie){
+    //updateToken(cookie);
     try {
-      const salt:string = process.env.TOKEN_SALT as string;
-      const decoded = jwt.verify(cookie, salt);
+      //const salt:string = process.env.TOKEN_SALT as string;
+
+      const decoded = await jose.jwtVerify(cookie, secretForJoes());
       console.log('decoded = ', decoded);
     } catch(err) {
       console.log('jwt err = ', err);
